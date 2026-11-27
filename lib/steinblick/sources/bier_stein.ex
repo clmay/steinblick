@@ -10,6 +10,18 @@ defmodule Steinblick.Sources.BierStein do
     |> Enum.map(&parse_tap/1)
   end
 
+  defp blank_to_nil(""), do: nil
+  defp blank_to_nil(text), do: text
+
+  defp clean(text), do: text |> String.replace(~r/\s+/u, " ") |> String.trim()
+
+  defp parse_abv("ABV " <> number) do
+    case Float.parse(number) do
+      {abv, "%"} -> abv
+      :error -> nil
+    end
+  end
+
   defp parse_tap(item) do
     [heading, beer, origin] =
       item
@@ -17,7 +29,7 @@ defmodule Steinblick.Sources.BierStein do
       |> Enum.map(&LazyHTML.text/1)
       |> Enum.map(&clean/1)
 
-    [description | _] =
+    [description, abv | _] =
       item
       |> LazyHTML.query(".list-menu-item__body p")
       |> LazyHTML.text()
@@ -27,16 +39,12 @@ defmodule Steinblick.Sources.BierStein do
     {number, rest} = Integer.parse(heading)
 
     %{
-      number: number,
-      brewery: rest |> String.trim_leading(".") |> String.trim(),
+      abv: parse_abv(abv),
       beer: beer,
-      origin: blank_to_nil(origin),
-      description: description
+      brewery: rest |> String.trim_leading(".") |> String.trim(),
+      description: description,
+      number: number,
+      origin: blank_to_nil(origin)
     }
   end
-
-  defp clean(text), do: text |> String.replace(~r/\s+/u, " ") |> String.trim()
-
-  defp blank_to_nil(""), do: nil
-  defp blank_to_nil(text), do: text
 end
