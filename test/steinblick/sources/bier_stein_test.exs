@@ -66,5 +66,13 @@ defmodule Steinblick.Sources.BierSteinTest do
       assert Enum.find(taps, &(&1.number == 1)).fill_percent == 93
       assert Enum.find(taps, &(&1.number == 26)).fill_percent == 0
     end
+
+    test "reads each size and its price in cents, in page order", %{taps: taps} do
+      assert Enum.find(taps, &(&1.number == 1)).prices == [
+               %{price_cents: 225, size: "4.5oz"},
+               %{price_cents: 775, size: ".5L"},
+               %{price_cents: 600, size: "16oz To Go"}
+             ]
+    end
   end
 end
