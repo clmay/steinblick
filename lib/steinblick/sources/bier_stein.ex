@@ -15,7 +15,14 @@ defmodule Steinblick.Sources.BierStein do
       item
       |> LazyHTML.query(".list-menu-item__head span")
       |> Enum.map(&LazyHTML.text/1)
-      |> Enum.map(&String.trim/1)
+      |> Enum.map(&clean/1)
+
+    [description | _] =
+      item
+      |> LazyHTML.query(".list-menu-item__body p")
+      |> LazyHTML.text()
+      |> String.split("|")
+      |> Enum.map(&clean/1)
 
     {number, rest} = Integer.parse(heading)
 
@@ -23,9 +30,12 @@ defmodule Steinblick.Sources.BierStein do
       number: number,
       brewery: rest |> String.trim_leading(".") |> String.trim(),
       beer: beer,
-      origin: blank_to_nil(origin)
+      origin: blank_to_nil(origin),
+      description: description
     }
   end
+
+  defp clean(text), do: text |> String.replace(~r/\s+/u, " ") |> String.trim()
 
   defp blank_to_nil(""), do: nil
   defp blank_to_nil(text), do: text

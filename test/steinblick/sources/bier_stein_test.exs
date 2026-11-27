@@ -48,5 +48,12 @@ defmodule Steinblick.Sources.BierSteinTest do
     test "trims stray whitespace from text", %{taps: taps} do
       assert %{origin: "Camas, WA"} = Enum.find(taps, &(&1.number == 2))
     end
+
+    test "reads the description, with runs of spaces collapsed", %{taps: taps} do
+      assert %{description: "Non-Alcoholic Pilsner"} = Enum.find(taps, &(&1.number == 1))
+
+      assert %{description: "IPA - Hops (Citra, Simcoe, Centennial & Citra Cryo)"} =
+               Enum.find(taps, &(&1.number == 3))
+    end
   end
 end
