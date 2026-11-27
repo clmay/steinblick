@@ -1,0 +1,5 @@
+[git_hooks.commit-msg]
+script = """#!/bin/sh
+set -e
+cog verify --ignore-merge-commits --ignore-fixup-commits --file "$1"
+"""
