@@ -11,13 +11,22 @@ defmodule Steinblick.Sources.BierStein do
   end
 
   defp parse_tap(item) do
-    [heading | _] =
+    [heading, beer, origin] =
       item
       |> LazyHTML.query(".list-menu-item__head span")
       |> Enum.map(&LazyHTML.text/1)
+      |> Enum.map(&String.trim/1)
 
-    {number, _rest} = Integer.parse(heading)
+    {number, rest} = Integer.parse(heading)
 
-    %{number: number}
+    %{
+      number: number,
+      brewery: rest |> String.trim_leading(".") |> String.trim(),
+      beer: beer,
+      origin: blank_to_nil(origin)
+    }
   end
+
+  defp blank_to_nil(""), do: nil
+  defp blank_to_nil(text), do: text
 end
