@@ -9,32 +9,7 @@ defmodule Steinblick.Sources.BierSteinTest do
 
   describe "parse/1" do
     test "finds every tap by number, including gaps", %{taps: taps} do
-      assert Enum.map(taps, & &1.number) ==
-               [
-                 1,
-                 2,
-                 3,
-                 4,
-                 5,
-                 6,
-                 7,
-                 9,
-                 10,
-                 11,
-                 12,
-                 13,
-                 15,
-                 16,
-                 17,
-                 18,
-                 19,
-                 20,
-                 21,
-                 22,
-                 23,
-                 26,
-                 27
-               ]
+      assert Enum.map(taps, & &1.number) == Enum.to_list(1..27) -- [8, 14, 24, 25]
     end
 
     test "reads brewery, beer and origin from each tap's heading", %{taps: taps} do
