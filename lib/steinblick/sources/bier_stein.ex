@@ -22,6 +22,18 @@ defmodule Steinblick.Sources.BierStein do
     end
   end
 
+  defp parse_price(row) do
+    [size, "$" <> amount] =
+      row
+      |> LazyHTML.query("td")
+      |> Enum.map(&LazyHTML.text/1)
+      |> Enum.map(&clean/1)
+
+    [dollars, cents] = String.split(amount, ".")
+
+    %{price_cents: String.to_integer(dollars) * 100 + String.to_integer(cents), size: size}
+  end
+
   defp parse_tap(item) do
     [heading, beer, origin] =
       item
@@ -45,6 +57,11 @@ defmodule Steinblick.Sources.BierStein do
       |> clean()
       |> Integer.parse()
 
+    prices =
+      item
+      |> LazyHTML.query(".list-menu-item__table tbody tr")
+      |> Enum.map(&parse_price/1)
+
     %{
       abv: parse_abv(abv),
       beer: beer,
@@ -52,7 +69,8 @@ defmodule Steinblick.Sources.BierStein do
       description: description,
       fill_percent: fill_percent,
       number: number,
-      origin: blank_to_nil(origin)
+      origin: blank_to_nil(origin),
+      prices: prices
     }
   end
 end
