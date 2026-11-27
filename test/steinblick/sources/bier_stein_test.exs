@@ -61,5 +61,10 @@ defmodule Steinblick.Sources.BierSteinTest do
       assert Enum.find(taps, &(&1.number == 2)).abv == 5.8
       assert Enum.find(taps, &(&1.number == 26)).abv == nil
     end
+
+    test "reads fill percent as an integer", %{taps: taps} do
+      assert Enum.find(taps, &(&1.number == 1)).fill_percent == 93
+      assert Enum.find(taps, &(&1.number == 26)).fill_percent == 0
+    end
   end
 end
