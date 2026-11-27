@@ -3,12 +3,12 @@ defmodule Steinblick.Sources.BierSteinTest do
 
   alias Steinblick.Sources.BierStein
 
+  setup_all do
+    %{taps: BierStein.parse(File.read!("test/fixtures/bier_stein.html"))}
+  end
+
   describe "parse/1" do
-    test "finds every tap by number, including gaps" do
-      html = File.read!("test/fixtures/bier_stein.html")
-
-      taps = BierStein.parse(html)
-
+    test "finds every tap by number, including gaps", %{taps: taps} do
       assert Enum.map(taps, & &1.number) ==
                [
                  1,
@@ -35,6 +35,18 @@ defmodule Steinblick.Sources.BierSteinTest do
                  26,
                  27
                ]
+    end
+
+    test "reads brewery, beer and origin from each tap's heading", %{taps: taps} do
+      assert %{brewery: "Bitburger", beer: "Drive N/A", origin: "Bitburg, Germany"} =
+               Enum.find(taps, &(&1.number == 1))
+
+      assert %{brewery: "Caldera", beer: "Root Beer", origin: nil} =
+               Enum.find(taps, &(&1.number == 26))
+    end
+
+    test "trims stray whitespace from text", %{taps: taps} do
+      assert %{origin: "Camas, WA"} = Enum.find(taps, &(&1.number == 2))
     end
   end
 end
