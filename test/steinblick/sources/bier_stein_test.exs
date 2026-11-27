@@ -55,5 +55,11 @@ defmodule Steinblick.Sources.BierSteinTest do
       assert %{description: "IPA - Hops (Citra, Simcoe, Centennial & Citra Cryo)"} =
                Enum.find(taps, &(&1.number == 3))
     end
+
+    test "reads ABV as a number, or nil when the page leaves it blank", %{taps: taps} do
+      assert Enum.find(taps, &(&1.number == 1)).abv == 0.0
+      assert Enum.find(taps, &(&1.number == 2)).abv == 5.8
+      assert Enum.find(taps, &(&1.number == 26)).abv == nil
+    end
   end
 end
